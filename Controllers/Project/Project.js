@@ -110,9 +110,7 @@ exports.updateProjectById = async (req, res) => {
     console.log({ error })
     return res.status(500).json({ error })
   }
-  console.log(projectId)
-  console.log(req.files)
-  console.log(req.file)
+
 
   if (projectId) {
     Project.findOne({
