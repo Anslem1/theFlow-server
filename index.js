@@ -3,8 +3,8 @@ const mongoose = require('mongoose')
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const expressBusboy = require('express-busboy')
 
+mongoose.set('strictQuery', true)
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
@@ -12,7 +12,6 @@ mongoose
   })
   .then(console.log('Mongo working?'))
   .catch(err => console.log({ err }))
-mongoose.set('strictQuery', true)
 
 const authRoute = require('./Routes/User/User')
 const projectRoute = require('./Routes/Project/Project')
