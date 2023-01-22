@@ -5,7 +5,6 @@ const app = express()
 const cors = require('cors')
 const expressBusboy = require('express-busboy')
 
-
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
@@ -19,8 +18,6 @@ const authRoute = require('./Routes/User/User')
 const projectRoute = require('./Routes/Project/Project')
 const categoryRoute = require('./Routes/Category/category')
 
-
-
 app
   .use(cors())
   .use(express.json())
@@ -28,5 +25,5 @@ app
   .use('/api/project', projectRoute)
   .use('/api/category', categoryRoute)
 app.listen(process.env.PORT, () => {
-  console.log(`server running on port ${process.env.PORT}`)  
+  console.log(`server running on port ${process.env.PORT}`)
 })
