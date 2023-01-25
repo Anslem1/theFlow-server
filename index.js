@@ -23,7 +23,6 @@ app
   .use('/api/auth', authRoute)
   .use('/api/project', projectRoute)
   .use('/api/category', categoryRoute)
-
 app.listen(process.env.PORT, () => {
   console.log(`server running on port ${process.env.PORT}`)
 })

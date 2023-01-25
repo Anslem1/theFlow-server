@@ -16,7 +16,6 @@ router
   .post(
     '/create',
     requireSignin,
-
     upload.array('projectImage', 6),
     createProject
   )
