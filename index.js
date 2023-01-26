@@ -4,6 +4,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 
+app.set('view engine', 'ejs')
 mongoose.set('strictQuery', true)
 mongoose
   .connect(process.env.MONGO_URL, {
@@ -19,6 +20,7 @@ const categoryRoute = require('./Routes/Category/category')
 
 app
   .use(cors())
+  .use(express.urlencoded({ extended: false }))
   .use(express.json())
   .use('/api/auth', authRoute)
   .use('/api/project', projectRoute)

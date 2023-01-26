@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+     <style type="text/css">
+          @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+          @import url("https://fonts.googleapis.com/css2?family=Raleway&display=swap");
+          * {
+               margin: 0;
+               padding: 0;
+          }
+          nav {
+               background-color: rgb(27, 23, 23);
+               height: 70px;
+               display: flex;
+
+               padding-left: 10px;
+               align-items: center;
+               position: fixed;
+               width: 100%;
+               z-index: 1;
+          }
+          nav > p {
+               text-align: center !important;
+               font-size: 25px;
+               color: white;
+               font-family: Raleway;
+          }
+          nav > p > span {
+               text-align: center;
+               text-decoration: none;
+               transform: translate(-50%, 50%);
+          }
+          nav > p > span {
+               font-style: oblique;
+               vertical-align: super;
+               margin-right: 3px;
+          }
+
+          .reset-password-container {
+               position: absolute;
+               top: 80px;
+               height: 100%;
+               width: 100%;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+          }
+          .reset-password-content {
+               position: relative;
+               padding: 100px;
+               box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px,
+                    rgba(0, 0, 0, 0.24) 0px 1px 2px;
+               border-radius: 10px;
+          }
+
+          .reset-password-content > h2 {
+               font-family: Raleway;
+               text-align: center;
+               margin-bottom: 20px;
+
+               /* margin-bottom: 100px; */
+          }
+
+          .reset-password-content > form {
+               display: grid;
+               gap: 10px;
+               justify-content: center;
+          }
+          .reset-password-content > form > h2 {
+               font-family: Roboto;
+               font-weight: 400;
+          }
+
+          .reset-password-content > form > input {
+               border-radius: 8px;
+               padding: 7px 10px;
+               outline-color: #c58585;
+               width: 250px;
+               outline-width: 1px;
+               border: 1px solid #9e9e8d;
+          }
+
+          .reset-password-content > form > button {
+               display: grid;
+               border-radius: 8px;
+               padding: 7px 10px;
+               outline-color: #c58585;
+               width: 30%;
+               outline-width: 1px;
+               border: 1px solid #9e9e8d;
+               background-color: #000;
+               color: white;
+               font-family: Roboto;
+               cursor: pointer;
+          }
+
+          @media screen and (max-width: 500px) {
+               .reset-password-content > form > input {
+                    width: 200px;
+               }
+
+               .reset-password-content {
+                    padding: 40px 15px;
+               }
+
+               .reset-password-content > h2 {
+                    font-size: 20px;
+               }
+          }
+     </style>
+     <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta
+               name="viewport"
+               content="width=device-width, initial-scale=1.0"
+          />
+          <title>theFlow Reset password</title>
+     </head>
+     <body>
+          <nav>
+               <p><span>the</span>Flow</p>
+          </nav>
+
+          <div class="reset-password-container">
+               <div class="reset-password-content">
+                    <h2><%= email %></h2>
+                    <form action="" method="post" class="input-container">
+                         <h2>Reset your password</h2>
+                         <input
+                              class=""
+                              type="password"
+                              name="password"
+                              placeholder="password"
+                              required
+                         />
+                         <input
+                              type="password"
+                              name="confirmPassword"
+                              placeholder="confirm password"
+                              required
+                         />
+                         <button>Submit</button>
+                    </form>
+               </div>
+          </div>
+     </body>
+</html>
