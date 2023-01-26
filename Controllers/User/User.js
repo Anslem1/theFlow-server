@@ -127,8 +127,7 @@ exports.forgotPassword = async (req, res) => {
         resetPasswordLink = `http://localhost:8080/api/auth/reset-password/${user._id}/${token}`
       // running on the web server
       else
-        resetPasswordLink = `https://theflow-server.onrender.com/api/auth/reset-password/
-      ${user._id}/${token}`
+        resetPasswordLink = `https://theflow-server.onrender.com/api/auth/reset-password/${user._id}/${token}`
 
       const transporter = nodemailer.createTransport({
         service: 'gmail',
