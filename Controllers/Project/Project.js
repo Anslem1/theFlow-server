@@ -1,3 +1,4 @@
+const { cloudinary } = require('../../cloudinary')
 const Project = require('../../Models/Project')
 const User = require('../../Models/User')
 
@@ -11,60 +12,70 @@ exports.createProject = (req, res) => {
     if (projectname) {
       res.status(400).json({ message: 'Project name already exists' })
     } else {
-      req.body.user = req.user._id
-      let projectImages = []
-      let projectTechnologies = []
+      const { projectName, projectDescription, projectType } = req.body
 
-      if (req.files && req.files.length > 0) {
-        projectImages = req.files.map(file => {
-          return { image: file.path }
-        })
-      }
+      if (projectName && projectDescription && projectType) {
+        req.body.user = req.user._id
+        let projectImages = []
+        let projectTechnologies = []
 
-      if (
-        req.body.technology &&
-        req.body.technology.length > 0 &&
-        req.body.technology instanceof Array
-      ) {
-        projectTechnologies = req.body.technology.map(technology => {
-          return { technology }
-        })
-      } else if (req.body.technology.includes(',')) {
-        const technologyBody = req.body.technology.split(',')
-        projectTechnologies = technologyBody.map(technology => {
-          return { technology }
-        })
-      } else if (typeof req.body.technology === 'string') {
-        projectTechnologies = [req.body.technology].map(technology => {
-          return { technology }
-        })
-      }
-
-      const { projectName, projectDescription, projectType, category } =
-        req.body
-      let { projectGitUrl, projectSite } = req.body
-
-      const project = new Project({
-        projectName,
-        projectDescription,
-        projectTechnologies,
-        projectType,
-        projectGitUrl: !projectGitUrl ? (projectGitUrl = 'N/A') : projectGitUrl,
-        category,
-        projectImages,
-        projectSite: !projectSite ? (projectSite = 'N/A') : projectSite,
-        user: req.user._id
-      })
-
-      project.save((error, project) => {
-        try {
-          if (error) res.status(400).json({ error })
-          error && console.log({ error })
-          if (project) res.status(200).json({ project })
-        } catch (error) {
-          console.log({ error })
+        if (req.files && req.files.length > 0) {
+          projectImages = req.files.map(file => {
+            console.log(file)
+            return { image: file.path }
+          })
         }
-      })
+
+        if (
+          req.body.technology &&
+          req.body.technology.length > 0 &&
+          req.body.technology instanceof Array
+        ) {
+          projectTechnologies = req.body.technology.map(technology => {
+            return { technology }
+          })
+        } else if (
+          typeof req.body.technology === 'string' &&
+          req.body.technology.includes(',')
+        ) {
+          const technologyBody = req.body.technology.split(',')
+          projectTechnologies = technologyBody.map(technology => {
+            return { technology }
+          })
+        } else if (typeof req.body.technology === 'string') {
+          projectTechnologies = [req.body.technology].map(technology => {
+            return { technology }
+          })
+        }
+
+        let { projectGitUrl, projectSite } = req.body
+
+        const project = new Project({
+          projectName,
+          projectDescription,
+          projectTechnologies,
+          projectType,
+          projectGitUrl: !projectGitUrl
+            ? (projectGitUrl = 'N/A')
+            : projectGitUrl,
+          projectImages,
+          projectSite: !projectSite ? (projectSite = 'N/A') : projectSite,
+          user: req.user._id
+        })
+
+        project.save((error, project) => {
+          try {
+            if (error) res.status(400).json({ error })
+            error && console.log({ error })
+            if (project) res.status(200).json({ project })
+          } catch (error) {
+            console.log({ error })
+          }
+        })
+      } else
+        return res
+          .status(400)
+          .json({ message: 'Please fill in the required fields' })
     }
   })
 }
@@ -100,6 +111,7 @@ exports.getProjectById = async (req, res) => {
   }
 }
 exports.updateProjectById = async (req, res) => {
+  console.log(req.body)
   let projectId
   try {
     projectId = await Project.findOne({
@@ -111,7 +123,6 @@ exports.updateProjectById = async (req, res) => {
     return res.status(500).json({ error })
   }
 
-
   if (projectId) {
     Project.findOne({
       user: req.user._id,
@@ -122,16 +133,19 @@ exports.updateProjectById = async (req, res) => {
         if (projectId.user._id.toString() == req.user._id) {
           let projectTechnologies = []
 
+          if (req.files && req.files.length > 0) {
+            projectImages = req.files.map(file => {
+              console.log(file)
+              return { image: file.path }
+            })
+          }
+
           if (
+            req.body.technology &&
             req.body.technology.length > 0 &&
             req.body.technology instanceof Array
           ) {
             projectTechnologies = req.body.technology.map(technology => {
-              return { technology }
-            })
-          } else if (req.body.technology.includes(',')) {
-            const technologyBody = req.body.technology.split(',')
-            projectTechnologies = technologyBody.map(technology => {
               return { technology }
             })
           } else if (typeof req.body.technology === 'string') {
@@ -179,53 +193,6 @@ exports.updateProjectById = async (req, res) => {
   } else res.status(400).json({ message: 'Could not find that' })
 }
 
-exports.deleteProjectById = async (req, res) => {
-  const projectId = await Project.findOne({
-    user: req.user._id,
-    _id: req.params.id
-  })
-  if (projectId) {
-    if (projectId.user._id.toString() == req.user._id) {
-      Project.findOneAndDelete({
-        user: req.user._id,
-        _id: req.params.id
-      }).exec((error, project) => {
-        Project.findOne({
-          user: req.user._id,
-          _id: req.params.id
-        }).exec((error, isProject) => {
-          error && res.status(400).json({ error })
-          !isProject && res.status(200).json({ message: 'Project deleted' })
-        })
-      })
-    } else {
-      res.status(400).json({ message: 'Action not allowed' })
-    }
-  } else res.status(400).json({ message: 'Could not find that to delete' })
-}
-
-// exports.getProjectsByTechnology = async (req, res) => {
-//   console.log([req.params])
-//   try {
-//     Project.find({
-//       user: req.user._id,
-//       'projectTechnologies.technology': { $regex: req.params.name }
-//     }).exec((error, technology) => {
-//       error &&
-//         res.status(400).json({
-//           error
-//         })
-//       technology &&
-//         res.status(200).json({
-//           project: technology
-//         })
-//     })
-//   } catch (error) {
-//     error && res.status(500).json(error)
-//     console.log({ error })
-//   }
-// }
-
 exports.getProjectsBySearchParam = async (req, res) => {
   try {
     let regex = new RegExp(req.params.name, 'i')
@@ -256,4 +223,50 @@ exports.getProjectsBySearchParam = async (req, res) => {
     error && res.status(500).json(error)
     console.log({ error })
   }
+}
+
+exports.deleteProjectById = async (req, res) => {
+  const projectId = await Project.findOne({
+    user: req.user._id,
+    _id: req.params.id
+  })
+  if (projectId) {
+    if (projectId.user._id.toString() == req.user._id) {
+      Project.findOneAndDelete({
+        user: req.user._id,
+        _id: req.params.id
+      }).exec((error, project) => {
+        Project.findOne({
+          user: req.user._id,
+          _id: req.params.id
+        }).exec((error, isProject) => {
+          error && res.status(400).json({ error })
+          if (projectId.projectImages) {
+            let imageUrlArray = projectId.projectImages.map(url => {
+            
+              let extractedString = url.image
+                .split('image/upload/v')[1]
+                .split('.jpg')[0]
+              let parts = extractedString.split('/')
+              parts.shift()
+     
+              return parts.join('/')
+            })
+         
+            cloudinary.uploader.destroy(imageUrlArray, (error, result) => {
+              if (error) {
+                console.error(error)
+              } else {
+                console.log({ result })
+              }
+            })
+          }
+
+          !isProject && res.status(200).json({ message: 'Project deleted' })
+        })
+      })
+    } else {
+      res.status(400).json({ message: 'Action not allowed' })
+    }
+  } else res.status(400).json({ message: 'Could not find that to delete' })
 }
