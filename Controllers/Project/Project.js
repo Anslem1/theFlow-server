@@ -21,8 +21,7 @@ exports.createProject = (req, res) => {
 
         if (req.files && req.files.length > 0) {
           projectImages = req.files.map(file => {
-            console.log(file)
-            return { image: file.path }
+            return { image: file.path, fileName: file.filename }
           })
         }
 
@@ -96,7 +95,6 @@ exports.getProjectById = async (req, res) => {
     Project.findOne({ user: req.user._id, _id: req.params.id })
       .populate({ path: 'user', select: '_id' })
       .exec((error, project) => {
-        // error && res.status(400).json({ error })
         if (error && error.name != 'CastError') {
           res.status(400).json({ error })
         }
@@ -111,7 +109,6 @@ exports.getProjectById = async (req, res) => {
   }
 }
 exports.updateProjectById = async (req, res) => {
-  console.log(req.body)
   let projectId
   try {
     projectId = await Project.findOne({
@@ -132,10 +129,10 @@ exports.updateProjectById = async (req, res) => {
       try {
         if (projectId.user._id.toString() == req.user._id) {
           let projectTechnologies = []
+          let projectImages = []
 
           if (req.files && req.files.length > 0) {
             projectImages = req.files.map(file => {
-              console.log(file)
               return { image: file.path }
             })
           }
@@ -163,7 +160,8 @@ exports.updateProjectById = async (req, res) => {
               {
                 $set: {
                   ...req.body,
-                  projectTechnologies
+                  projectTechnologies,
+                  projectImages
                 }
               },
               {
@@ -175,6 +173,23 @@ exports.updateProjectById = async (req, res) => {
                   message: 'Project with that name already exists'
                 })
               } else if (project) {
+                if (project.projectImages) {
+                  let imageUrlArray = projectId.projectImages.map(
+                    url => url.fileName
+                  )
+
+                  cloudinary.api.delete_resources(
+                    imageUrlArray,
+                    (error, result) => {
+                      if (error) {
+                        console.error(error)
+                      } else {
+                        console.log({ result })
+                      }
+                    }
+                  )
+                }
+
                 res.status(200).json({ project })
               }
             })
@@ -242,18 +257,9 @@ exports.deleteProjectById = async (req, res) => {
         }).exec((error, isProject) => {
           error && res.status(400).json({ error })
           if (projectId.projectImages) {
-            let imageUrlArray = projectId.projectImages.map(url => {
-            
-              let extractedString = url.image
-                .split('image/upload/v')[1]
-                .split('.jpg')[0]
-              let parts = extractedString.split('/')
-              parts.shift()
-     
-              return parts.join('/')
-            })
-         
-            cloudinary.uploader.destroy(imageUrlArray, (error, result) => {
+            let imageUrlArray = projectId.projectImages.map(url => url.fileName)
+
+            cloudinary.api.delete_resources(imageUrlArray, (error, result) => {
               if (error) {
                 console.error(error)
               } else {

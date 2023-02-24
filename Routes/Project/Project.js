@@ -23,15 +23,11 @@ router
   .get('/get/:id', requireSignin, getProjectById)
   .get('/get/search/:name', requireSignin, getProjectsBySearchParam)
   .delete('/delete/:id', requireSignin, deleteProjectById)
-// .get('/get/technology/:name', requireSignin, getProjectsByTechnology)
-// router
-expressBusboy
-.extend(router)
-  .post(
-  '/update/:id',
-  requireSignin,
-  upload.array('projectImage', 6),
-  updateProjectById
-)
+  .put(
+    '/update/:id',
+    requireSignin,
+    upload.array('projectImage', 6),
+    updateProjectById
+  )
 
 module.exports = router

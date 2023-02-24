@@ -20,8 +20,8 @@ const categoryRoute = require('./Routes/Category/category')
 
 app
   .use(cors())
-  .use(express.urlencoded({ extended: false }))
   .use(express.json())
+  .use(express.urlencoded({ extended: false }))
   .use('/api/auth', authRoute)
   .use('/api/project', projectRoute)
   .use('/api/category', categoryRoute)
