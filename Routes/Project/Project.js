@@ -6,7 +6,6 @@ const {
   getProjectById,
   updateProjectById,
   deleteProjectById,
-  getProjectsByTechnology,
   getProjectsBySearchParam
 } = require('../../Controllers/Project/Project')
 const { requireSignin, upload } = require('../../Middlewares/middleware')
@@ -22,12 +21,12 @@ router
   .get('/get', requireSignin, getProjects)
   .get('/get/:id', requireSignin, getProjectById)
   .get('/get/search/:name', requireSignin, getProjectsBySearchParam)
-  .delete('/delete/:id', requireSignin, deleteProjectById)
   .put(
     '/update/:id',
     requireSignin,
     upload.array('projectImage', 6),
     updateProjectById
   )
+  .delete('/delete/:id', requireSignin, deleteProjectById)
 
 module.exports = router

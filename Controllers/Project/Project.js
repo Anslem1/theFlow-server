@@ -133,6 +133,21 @@ exports.updateProjectById = async (req, res) => {
 
           if (req.files && req.files.length > 0) {
             projectImages = req.files.map(file => {
+              let imageUrlArray = projectId.projectImages.map(
+                url => url.fileName
+              )
+
+              cloudinary.api.delete_resources(
+                imageUrlArray,
+                (error, result) => {
+                  if (error) {
+                    console.error(error)
+                  } else {
+                    console.log({ result })
+                  }
+                }
+              )
+
               return { image: file.path }
             })
           }
@@ -173,23 +188,6 @@ exports.updateProjectById = async (req, res) => {
                   message: 'Project with that name already exists'
                 })
               } else if (project) {
-                if (project.projectImages) {
-                  let imageUrlArray = projectId.projectImages.map(
-                    url => url.fileName
-                  )
-
-                  cloudinary.api.delete_resources(
-                    imageUrlArray,
-                    (error, result) => {
-                      if (error) {
-                        console.error(error)
-                      } else {
-                        console.log({ result })
-                      }
-                    }
-                  )
-                }
-
                 res.status(200).json({ project })
               }
             })
