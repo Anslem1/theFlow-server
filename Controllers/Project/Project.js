@@ -129,29 +129,6 @@ exports.updateProjectById = async (req, res) => {
       try {
         if (projectId.user._id.toString() == req.user._id) {
           let projectTechnologies = []
-          let projectImages = []
-
-          if (req.files && req.files.length > 0) {
-            projectImages = req.files.map(file => {
-              let imageUrlArray = projectId.projectImages.map(
-                url => url.fileName
-              )
-
-              cloudinary.api.delete_resources(
-                imageUrlArray,
-                (error, result) => {
-                  if (error) {
-                    console.error(error)
-                  } else {
-                    console.log({ result })
-                  }
-                }
-              )
-
-              return { image: file.path }
-            })
-          }
-
           if (
             req.body.technology &&
             req.body.technology.length > 0 &&
@@ -175,8 +152,7 @@ exports.updateProjectById = async (req, res) => {
               {
                 $set: {
                   ...req.body,
-                  projectTechnologies,
-                  projectImages
+                  projectTechnologies
                 }
               },
               {
