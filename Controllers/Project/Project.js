@@ -137,6 +137,14 @@ exports.updateProjectById = async (req, res) => {
             projectTechnologies = req.body.technology.map(technology => {
               return { technology }
             })
+          } else if (
+            typeof req.body.technology === 'string' &&
+            req.body.technology.includes(',')
+          ) {
+            const technologyBody = req.body.technology.split(',')
+            projectTechnologies = technologyBody.map(technology => {
+              return { technology }
+            })
           } else if (typeof req.body.technology === 'string') {
             projectTechnologies = [req.body.technology].map(technology => {
               return { technology }
