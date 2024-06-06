@@ -60,7 +60,7 @@ exports.signIn = async (req, res) => {
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     error && res.status(400).json({ error })
     if (user) {
-      const validated = await bcrypt.compare(req.body.password, user.password)
+      const validated = bcrypt.compare(req.body.password, user.password)
       if (user && validated) {
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
           expiresIn: '30d'
@@ -93,7 +93,7 @@ exports.forgotPassword = async (req, res) => {
         resetPasswordLink = `http://localhost:8080/api/auth/reset-password/${user._id}/${token}`
       // running on the web server
       else
-        resetPasswordLink = `https://theflow-server.onrender.com/api/auth/reset-password/${user._id}/${token}`
+        resetPasswordLink = `the-flow-server.vercel.app/api/auth/reset-password/${user._id}/${token}`
 
       const transporter = nodemailer.createTransport({
         service: 'gmail',
